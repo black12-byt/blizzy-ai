@@ -1,1 +1,144 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10111a">
+<title>Blizzy AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10111a;color:#f5f5fa;font-family:Arial,sans-serif}
+.app{display:flex;height:100dvh}
+.sidebar{width:260px;background:#171824;padding:20px;display:flex;flex-direction:column;gap:20px}
+.logo{font-size:25px;font-weight:bold;color:#a78bfa}
+.logo span{color:white}
+.new{background:#292a3b;color:white;border:1px solid #45465c;padding:13px;border-radius:10px;text-align:left}
+.nav{display:grid;gap:12px;color:#c4c4d4;font-size:14px}
+.nav div{padding:10px;border-radius:8px;cursor:pointer}
+.nav div:hover,.new:hover{background:#303047}
+.history{margin-top:10px;color:#9999ad;font-size:13px}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.top{padding:17px 22px;border-bottom:1px solid #292a38;display:flex;justify-content:space-between;align-items:center}
+.top strong{font-size:16px}
+.mode{color:#a78bfa;font-size:12px}
+.content{flex:1;overflow:auto;padding:35px 18px;display:flex;flex-direction:column;align-items:center}
+.welcome{text-align:center;margin:auto 0;max-width:650px}
+.welcome h1{font-size:34px;margin-bottom:10px}
+.welcome h1 span{color:#a78bfa}
+.welcome p{color:#a5a5b8}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:30px;width:100%}
+.card{background:#1b1c2a;border:1px solid #303145;padding:18px;border-radius:12px;text-align:left;color:white;cursor:pointer}
+.card:hover{border-color:#a78bfa}
+.card small{display:block;color:#aaa;margin-top:8px}
+.chat{width:100%;max-width:760px}
+.message{padding:15px;margin:12px 0;border-radius:12px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.user{background:#292a3d;margin-left:35px}
+.bot{background:#1b1c2a;margin-right:35px}
+.composer{width:calc(100% - 30px);max-width:760px;margin:0 auto 20px;background:#1b1c2a;border:1px solid #44445b;border-radius:16px;padding:12px}
+textarea{width:100%;background:transparent;color:white;border:0;outline:0;resize:none;min-height:55px;font-size:15px}
+.actions{display:flex;justify-content:space-between;align-items:center}
+select{background:#292a3b;color:#ddd;border:0;padding:8px;border-radius:8px}
+.send{background:#a78bfa;color:#151322;border:0;border-radius:9px;padding:11px 20px;font-weight:bold;cursor:pointer}
+.send:disabled{opacity:.5}
+footer{text-align:center;color:#77778a;font-size:11px;padding-bottom:10px}
+@media(max-width:650px){
+.sidebar{width:65px;padding:12px 7px;align-items:center}
+.logo{font-size:15px}
+.new{font-size:0;width:45px;height:45px;text-align:center;padding:10px}
+.new:after{content:"+";font-size:23px}
+.nav div{font-size:0;text-align:center;padding:10px}
+.nav div:before{content:"◆";font-size:15px}
+.history{display:none}
+.welcome h1{font-size:27px}
+.cards{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+<div class="logo">B<span>AI</span></div>
+<button class="new" onclick="newChat()">+ New chat</button>
+<div class="nav">
+<div onclick="setMode('assistant')">AI Assistant</div>
+<div onclick="setMode('website')">Website Builder</div>
+<div onclick="setMode('code')">Code Generator</div>
+</div>
+<div class="history">YOUR WORKSPACE<br><br>Conversations will appear here.</div>
+</aside>
+<main class="main">
+<header class="top">
+<strong>Blizzy AI</strong>
+<span class="mode" id="modeLabel">AI ASSISTANT</span>
+</header>
+<section class="content" id="content">
+<div class="welcome" id="welcome">
+<h1>Hello, welcome to <span>Blizzy AI</span></h1>
+<p>Your intelligent assistant. What would you like to create today?</p>
+<div class="cards">
+<button class="card" onclick="setMode('website')">🌐 Build a website<small>Create websites using simple instructions.</small></button>
+<button class="card" onclick="setMode('code')">⌨ Generate code<small>Generate and explain programming code.</small></button>
+<button class="card" onclick="setMode('assistant')">✦ Ask anything<small>Get help with your questions.</small></button>
+<button class="card" onclick="setMode('website')">🛍 Create an online store<small>Start an ecommerce website project.</small></button>
+</div>
+</div>
+<div class="chat" id="chat"></div>
+</section>
+<div class="composer">
+<textarea id="prompt" placeholder="Message Blizzy AI..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+<div class="actions">
+<select id="mode" onchange="updateMode()">
+<option value="assistant">AI Assistant</option>
+<option value="website">Website Builder</option>
+<option value="code">Code Generator</option>
+</select>
+<button class="send" onclick="sendMessage()">Send ↑</button>
+</div>
+</div>
+<footer>Blizzy AI can make mistakes. Verify important information.</footer>
+</main>
+</div>
+<script>
+let currentMode="assistant";
+function setMode(mode){
+currentMode=mode;
+document.getElementById("mode").value=mode;
+updateMode();
+document.getElementById("prompt").focus();
+}
+function updateMode(){
+currentMode=document.getElementById("mode").value;
+document.getElementById("modeLabel").textContent=currentMode.toUpperCase().replace("WEBSITE","WEBSITE BUILDER");
+}
+function newChat(){
+document.getElementById("chat").innerHTML="";
+document.getElementById("welcome").style.display="block";
+document.getElementById("prompt").value="";
+}
+function addMessage(text,type){
+const div=document.createElement("div");
+div.className="message "+type;
+div.textContent=text;
+document.getElementById("chat").appendChild(div);
+document.getElementById("content").scrollTop=document.getElementById("content").scrollHeight;
+}
+function sendMessage(){
+const input=document.getElementById("prompt");
+const text=input.value.trim();
+if(!text)return;
+document.getElementById("welcome").style.display="none";
+addMessage(text,"user");
+input.value="";
+if(currentMode==="website"){
+addMessage("Website Builder selected. Your request is ready for the website generation engine. AI connection is not configured yet.","bot");
+}else if(currentMode==="code"){
+addMessage("Code Generator selected. Your coding request is ready. AI connection is not configured yet.","bot");
+}else{
+addMessage("Welcome to Blizzy AI! Your message has been received. Connect an AI API to activate intelligent responses.","bot");
+}
+}
+</script>
+</body>
+  </html>
+  
